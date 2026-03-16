@@ -43,11 +43,12 @@ export const tryOnSunglasses = async (
     });
 
     const candidates = response.candidates ?? [];
-    if (candidates.length === 0) {
+    const firstCandidate = candidates[0];
+    if (!firstCandidate) {
       throw new Error("AI failed to process the image. Try a clearer photo.");
     }
 
-    const parts = candidates[0]?.content?.parts ?? [];
+    const parts = firstCandidate.content?.parts ?? [];
     for (const part of parts) {
       if (part?.inlineData?.data) {
         return `data:image/png;base64,${part.inlineData.data}`;

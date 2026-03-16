@@ -163,11 +163,11 @@ const App: React.FC = () => {
 
              <div className="mt-12 w-full max-w-md flex flex-col items-center">
                <button
-                 disabled={!selectedStyle || (rateLimitedUntil && Date.now() < rateLimitedUntil)}
+                 disabled={!selectedStyle || (rateLimitedUntil !== null && Date.now() < rateLimitedUntil)}
                  onClick={handleGenerate}
                  className={`
                    w-full py-5 rounded-full font-black text-xl tracking-[0.1em] uppercase transition-all duration-500
-                   ${selectedStyle && !(rateLimitedUntil && Date.now() < rateLimitedUntil)
+                   ${selectedStyle && !(rateLimitedUntil !== null && Date.now() < rateLimitedUntil)
                      ? 'bg-white text-black hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.3)] active:scale-95' 
                      : 'bg-neutral-900 text-neutral-600 cursor-not-allowed'}
                  `}

@@ -11,6 +11,7 @@ const App: React.FC = () => {
   const [selectedStyle, setSelectedStyle] = useState<SunglassesStyle | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rateLimitedUntil, setRateLimitedUntil] = useState<number | null>(null);
 
   // Check for API Key on load
   const isApiKeyMissing = !process.env.API_KEY || process.env.API_KEY === "" || process.env.API_KEY === "undefined";
@@ -36,6 +37,12 @@ const App: React.FC = () => {
       return;
     }
 
+    const now = Date.now();
+    if (rateLimitedUntil && now < rateLimitedUntil) {
+      setError(`Rate limited. Please wait ${Math.ceil((rateLimitedUntil - now) / 1000)}s and try again.`);
+      return;
+    }
+
     setStep('processing');
     try {
       console.log('Calling tryOnSunglasses...', { selectedStyle, capturedImage: capturedImage?.slice(0, 50) });
@@ -45,7 +52,15 @@ const App: React.FC = () => {
     } catch (err: any) {
       console.error("Try-on error:", err);
       const message = err?.message || (typeof err === 'string' ? err : JSON.stringify(err));
-      setError(message || "Failed to generate your look. Please try again.");
+
+      // Handle rate limiting from Gemini API
+      if (message.toLowerCase().includes('too many requests') || message.toLowerCase().includes('quota')) {
+        const retryAfterMs = 30_000; // 30 seconds
+        setRateLimitedUntil(Date.now() + retryAfterMs);
+        setError(`Rate limited by the API. Please wait ${Math.round(retryAfterMs / 1000)}s and try again.`);
+      } else {
+        setError(message || "Failed to generate your look. Please try again.");
+      }
       setStep('select');
     }
   };
@@ -148,11 +163,11 @@ const App: React.FC = () => {
 
              <div className="mt-12 w-full max-w-md flex flex-col items-center">
                <button
-                 disabled={!selectedStyle}
+                 disabled={!selectedStyle || (rateLimitedUntil && Date.now() < rateLimitedUntil)}
                  onClick={handleGenerate}
                  className={`
                    w-full py-5 rounded-full font-black text-xl tracking-[0.1em] uppercase transition-all duration-500
-                   ${selectedStyle
+                   ${selectedStyle && !(rateLimitedUntil && Date.now() < rateLimitedUntil)
                      ? 'bg-white text-black hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.3)] active:scale-95' 
                      : 'bg-neutral-900 text-neutral-600 cursor-not-allowed'}
                  `}

@@ -1,0 +1,7 @@
+{
+  "name": "Lumina Specs AR",
+  "description": "Premium AI-powered virtual sunglasses try-on experience using Gemini Nano Banana technology.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

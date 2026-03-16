@@ -42,13 +42,15 @@ export const tryOnSunglasses = async (
       },
     });
 
-    // `@google/genai` types are strict and can require fields that sometimes are missing.
-    // Use a safe any-cast here to avoid build failures when the response shape varies.
+    // `@google/genai` types can be strict; use `any` to avoid build failures when the response varies.
     const respAny = response as any;
-    const parts: any[] = respAny?.candidates?.[0]?.content?.parts ?? [];
+    const candidates = respAny?.candidates as any[] | undefined;
+    const firstCandidate = candidates?.[0] as any;
+    const parts = (firstCandidate?.content as any)?.parts as any[] | undefined;
+    const safeParts = parts ?? [];
 
-    for (const part of parts) {
-      const data = part?.inlineData?.data;
+    for (const part of safeParts) {
+      const data = (part as any)?.inlineData?.data;
       if (data) {
         return `data:image/png;base64,${data}`;
       }

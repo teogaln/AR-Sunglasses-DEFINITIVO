@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/lumina-specs-ar/', // Reemplaza con el nombre de tu repositorio
+  base: '/AR-Sunglasses-DEFINITIVO/', // GitHub Pages repo name
   define: {
     // Inject process.env safely
     'process.env': JSON.stringify(process.env)

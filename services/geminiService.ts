@@ -46,6 +46,7 @@ export const tryOnSunglasses = async (
     const respAny = response as any;
     const candidates = respAny?.candidates as any[] | undefined;
     const firstCandidate = candidates?.[0] as any;
+    // @ts-ignore: the library response typing can be incomplete, ignore strict null checks here
     const parts = (firstCandidate?.content as any)?.parts as any[] | undefined;
     const safeParts = parts ?? [];
 

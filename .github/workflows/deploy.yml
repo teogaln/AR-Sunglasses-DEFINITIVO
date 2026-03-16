@@ -30,6 +30,13 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Debug env
+        run: |
+          echo "API_KEY is: ${API_KEY:0:4}..."
+          node -e "console.log('process.env.API_KEY', process.env.API_KEY ? 'SET' : 'UNSET')"
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

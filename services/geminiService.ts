@@ -42,16 +42,15 @@ export const tryOnSunglasses = async (
       },
     });
 
-    const candidates = response.candidates ?? [];
-    const firstCandidate = candidates[0];
-    if (!firstCandidate) {
-      throw new Error("AI failed to process the image. Try a clearer photo.");
-    }
+    // `@google/genai` types are strict and can require fields that sometimes are missing.
+    // Use a safe any-cast here to avoid build failures when the response shape varies.
+    const respAny = response as any;
+    const parts: any[] = respAny?.candidates?.[0]?.content?.parts ?? [];
 
-    const parts = firstCandidate.content?.parts ?? [];
     for (const part of parts) {
-      if (part?.inlineData?.data) {
-        return `data:image/png;base64,${part.inlineData.data}`;
+      const data = part?.inlineData?.data;
+      if (data) {
+        return `data:image/png;base64,${data}`;
       }
     }
 

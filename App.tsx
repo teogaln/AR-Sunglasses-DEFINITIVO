@@ -38,12 +38,14 @@ const App: React.FC = () => {
 
     setStep('processing');
     try {
+      console.log('Calling tryOnSunglasses...', { selectedStyle, capturedImage: capturedImage?.slice(0, 50) });
       const result = await tryOnSunglasses(capturedImage, selectedStyle.prompt);
       setResultImage(result);
       setStep('result');
     } catch (err: any) {
       console.error("Try-on error:", err);
-      setError(err.message || "Failed to generate your look. Please try again.");
+      const message = err?.message || (typeof err === 'string' ? err : JSON.stringify(err));
+      setError(message || "Failed to generate your look. Please try again.");
       setStep('select');
     }
   };
